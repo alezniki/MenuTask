@@ -23,30 +23,25 @@ import java.util.HashMap;
 
 public class LoginActivity extends AppCompatActivity {
 
-    public final static String EMAIL_KEY = "email";
+    public final static String EMAIL = "email";
     public final static String EMAIL_VALUE = "test@testmenu.com";
-    public final static String PASSWORD_KEY = "password";
+    public final static String PASSWORD = "password";
     public final static String PASSWORD_VALUE = "test1234";
     public final static String URL_BASE = "https://usemenu.com/playground/public/api/v2/customer/login?app_version=2.8.1";
-
-    /**
-     * Is login valid
-     */
-    private boolean isValid;
+    public final static String SAVED_ACCESS_TOKEN = "SAVED_ACCESS_TOKEN";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Set references
         final EditText etEmail = (EditText) findViewById(R.id.et_login_email);
         final EditText etPassword = (EditText) findViewById(R.id.et_login_password);
         Button btnLogin = (Button) findViewById(R.id.btn_login);
 
-        HashMap<String, String> params = new HashMap<>();
-        params.put(EMAIL_KEY, EMAIL_VALUE);
-        params.put(PASSWORD_KEY, PASSWORD_VALUE);
+        final HashMap<String, String> params = new HashMap<>();
+        params.put(EMAIL, EMAIL_VALUE);
+        params.put(PASSWORD, PASSWORD_VALUE);
 
         //Request response data
         requestData(params);
@@ -54,11 +49,11 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Set login validation
-                isValid = etEmail.getText().toString().equals(EMAIL_VALUE) && etPassword.getText().toString().equals(PASSWORD_VALUE);
+
+                //Validate user email and password
+                boolean isValid = etEmail.getText().toString().equals(EMAIL_VALUE) && etPassword.getText().toString().equals(PASSWORD_VALUE);
 
                 if (isValid) {
-                    //Todo Pass the intent to detail activity with stored access token
                     Intent intent = new Intent(LoginActivity.this, DetailsActivity.class);
                     startActivity(intent);
                 } else {
@@ -70,30 +65,30 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Request Json data
+     * Request JSON data
      * <p>
      * Request data via Volley POST request
      *
-     * @param data data
+     * @param data map data
      */
     private void requestData(final HashMap data) {
-        final JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL_BASE, new JSONObject(data),
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL_BASE, new JSONObject(data),
                 new Response.Listener<JSONObject>() {
+
                     @Override
                     public void onResponse(final JSONObject response) {
-                        
+
                         //Prevent server errors
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                System.out.println("############# JSON RESPONSE " + response);
+                                System.out.println("############# LOGIN RESPONSE " + response);
 
                                 try {
+                                    //Store access token data from response
                                     String token = response.getString("access_token");
-                                    System.out.println("############# ACCESS TOKEN " + token);
+                                    storeTokenData(token);
 
-                                    //Store access token response
-                                    storeResponse(token);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -111,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 error.printStackTrace();
-                                System.out.println("############# ERROR " + error.toString());
+                                System.out.println("############# LOGIN ERROR " + error.toString());
                             }
                         });
                     }
@@ -122,21 +117,18 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Store response
+     * Store token data
      * <p>
-     * Store access token from Json response to shared preferences
+     * Store token data from Json response to shared preferences
      *
-     * @param token access token
+     * @param data token data
      */
-    private void storeResponse(String token) {
-
-        //Get default preferences
+    private void storeTokenData(String data) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
 
-        editor.putString("SAVED_ACCESS_TOKEN", token);
+        // Save key value set
+        editor.putString(SAVED_ACCESS_TOKEN, data);
         editor.apply();
-
-        System.out.println("############# STORED TOKEN " + token);
     }
 }
