@@ -2,6 +2,7 @@ package com.example.nikola.task;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -35,21 +36,23 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        Typeface typeface = Typeface.createFromAsset(getAssets(), getString(R.string.font_asset));
+
         final EditText etEmail = (EditText) findViewById(R.id.et_login_email);
         final EditText etPassword = (EditText) findViewById(R.id.et_login_password);
         Button btnLogin = (Button) findViewById(R.id.btn_login);
 
-        final HashMap<String, String> params = new HashMap<>();
-        params.put(EMAIL, EMAIL_VALUE);
-        params.put(PASSWORD, PASSWORD_VALUE);
+        //Set type face
+        etEmail.setTypeface(typeface);
+        etPassword.setTypeface(typeface);
+        btnLogin.setTypeface(typeface);
 
         //Request response data
-        requestData(params);
+        requestData();
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 //Validate user email and password
                 boolean isValid = etEmail.getText().toString().equals(EMAIL_VALUE) && etPassword.getText().toString().equals(PASSWORD_VALUE);
 
@@ -68,11 +71,14 @@ public class LoginActivity extends AppCompatActivity {
      * Request JSON data
      * <p>
      * Request data via Volley POST request
-     *
-     * @param data map data
      */
-    private void requestData(final HashMap data) {
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL_BASE, new JSONObject(data),
+    private void requestData() {
+
+        HashMap<String, String> params = new HashMap<>();
+        params.put(EMAIL, EMAIL_VALUE);
+        params.put(PASSWORD, PASSWORD_VALUE);
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL_BASE, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -82,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                System.out.println("############# LOGIN RESPONSE " + response);
+                                System.out.println("############# LOGIN SCREEN VOLLEY RESPONSE: " + response);
 
                                 try {
                                     //Store access token data from response
@@ -106,7 +112,7 @@ public class LoginActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 error.printStackTrace();
-                                System.out.println("############# LOGIN ERROR " + error.toString());
+                                System.out.println("############# LOGIN SCREEN VOLLEY ERROR: " + error.toString());
                             }
                         });
                     }
