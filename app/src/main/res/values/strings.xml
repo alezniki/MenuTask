@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Menu Task</string>
+    <string name="app_name">Menu</string>
     <string name="email_hint">Enter email address</string>
     <string name="password_hint">Enter password</string>
     <string name="login">Login</string>

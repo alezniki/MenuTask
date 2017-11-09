@@ -1,10 +1,10 @@
-package com.example.nikola.task;
+package com.example.nikola.task.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -16,20 +16,28 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.nikola.task.R;
+import com.example.nikola.task.utils.LoginManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 
+import static com.example.nikola.task.utils.Constants.EMAIL;
+import static com.example.nikola.task.utils.Constants.EMAIL_VALUE;
+import static com.example.nikola.task.utils.Constants.PASSWORD;
+import static com.example.nikola.task.utils.Constants.PASSWORD_VALUE;
+import static com.example.nikola.task.utils.Constants.SHARED_PREFS;
+import static com.example.nikola.task.utils.Constants.TOKEN_KEY;
+import static com.example.nikola.task.utils.Constants.URL_BASE_LOGIN;
+
 public class LoginActivity extends AppCompatActivity {
 
-    public final static String EMAIL = "email";
-    public final static String EMAIL_VALUE = "test@testmenu.com";
-    public final static String PASSWORD = "password";
-    public final static String PASSWORD_VALUE = "test1234";
-    public final static String URL_BASE = "https://usemenu.com/playground/public/api/v2/customer/login?app_version=2.8.1";
-    public final static String SAVED_ACCESS_TOKEN = "SAVED_ACCESS_TOKEN";
+    /**
+     * Login manager
+     */
+    private LoginManager loginManager;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -37,6 +45,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         Typeface typeface = Typeface.createFromAsset(getAssets(), getString(R.string.font_asset));
+
+        loginManager = new LoginManager(getApplicationContext());
 
         final EditText etEmail = (EditText) findViewById(R.id.et_login_email);
         final EditText etPassword = (EditText) findViewById(R.id.et_login_password);
@@ -47,24 +57,33 @@ public class LoginActivity extends AppCompatActivity {
         etPassword.setTypeface(typeface);
         btnLogin.setTypeface(typeface);
 
-        //Request response data
-        requestData();
-
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 //Validate user email and password
                 boolean isValid = etEmail.getText().toString().equals(EMAIL_VALUE) && etPassword.getText().toString().equals(PASSWORD_VALUE);
 
                 if (isValid) {
-                    Intent intent = new Intent(LoginActivity.this, DetailsActivity.class);
-                    startActivity(intent);
+                    loginManager.setLoggedIn(true);
                 } else {
+                    loginManager.setLoggedIn(false);
                     //Alert user that validation is not good
                     Toast.makeText(LoginActivity.this, R.string.validation_alert, Toast.LENGTH_SHORT).show();
                 }
+
+                if (loginManager.isLoggedIn()) {
+                    //Go to details screen after login is successful
+                    startActivity(new Intent(LoginActivity.this, DetailsActivity.class));
+
+                    // Destroy activity
+                    finish();
+                }
             }
         });
+
+        //Request response data
+        requestData();
     }
 
     /**
@@ -78,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
         params.put(EMAIL, EMAIL_VALUE);
         params.put(PASSWORD, PASSWORD_VALUE);
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL_BASE, new JSONObject(params),
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL_BASE_LOGIN, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -130,11 +149,10 @@ public class LoginActivity extends AppCompatActivity {
      * @param data token data
      */
     private void storeTokenData(String data) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = preferences.edit();
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        // Save key value set
-        editor.putString(SAVED_ACCESS_TOKEN, data);
+        editor.putString(TOKEN_KEY, data);
         editor.apply();
     }
 }

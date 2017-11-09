@@ -1,9 +1,10 @@
-package com.example.nikola.task;
+package com.example.nikola.task.ui;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,37 +18,61 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.nikola.task.R;
 import com.example.nikola.task.entities.ImageData;
 import com.example.nikola.task.entities.RestaurantData;
+import com.example.nikola.task.utils.LoginManager;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.example.nikola.task.LoginActivity.SAVED_ACCESS_TOKEN;
+import static com.example.nikola.task.utils.Constants.ACCESS_TOKEN;
+import static com.example.nikola.task.utils.Constants.MAJOR;
+import static com.example.nikola.task.utils.Constants.MAJOR_VALUE;
+import static com.example.nikola.task.utils.Constants.MINOR;
+import static com.example.nikola.task.utils.Constants.MINOR_VAlUE;
+import static com.example.nikola.task.utils.Constants.SHARED_PREFS;
+import static com.example.nikola.task.utils.Constants.TABLE_BEACON;
+import static com.example.nikola.task.utils.Constants.TOKEN_KEY;
+import static com.example.nikola.task.utils.Constants.URL_BASE_DETAILS;
 
 public class DetailsActivity extends AppCompatActivity {
 
-    public final static String TABLE_BEACON = "table_beacon";
-    public final static String MAJOR = "major";
-    public final static int MAJOR_VALUE = 5;
-    public final static String MINOR = "minor";
-    public final static int MINOR_VAlUE = 1;
-    public final static String ACCESS_TOKEN = "access_token";
-    public final static String URL_BASE = "https://usemenu.com/playground/public/api/v2/restaurant/info?app_version=2.8.1";
-
+    /**
+     * Restaurant name view
+     */
     private TextView tvName;
+
+    /**
+     * Restaurant intro view
+     */
     private TextView tvIntro;
+
+    /**
+     * Restaurant welcome message view
+     */
     private TextView tvMessage;
+
+    /**
+     * Open/Close view
+     */
     private TextView tvOpen;
+
+    /**
+     * Restaurant image view
+     */
     private ImageView ivThumbnail;
 
-    private JsonObjectRequest request;
+    private LoginManager loginManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
+
+
+        loginManager = new LoginManager(getApplicationContext());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) setSupportActionBar(toolbar);
@@ -58,11 +83,12 @@ public class DetailsActivity extends AppCompatActivity {
         tvOpen = (TextView) findViewById(R.id.tv_open);
         ivThumbnail = (ImageView) findViewById(R.id.iv_thumbnail);
 
-        // Get stored token data
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        final String token = preferences.getString(SAVED_ACCESS_TOKEN, "");
-        System.out.println("############# STORED TOKEN DATA: " + token);
+        //Retrieve stored token data
+        SharedPreferences preferences = getApplicationContext().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        String token = preferences.getString(TOKEN_KEY, "");
+        System.out.println("############# STORED TOKEN DATA " + token);
 
+        //JSON-encoded string
         String jsonString = "{" + TABLE_BEACON + ":{" + MAJOR + ":" + MAJOR_VALUE + "," + MINOR + ":" + MINOR_VAlUE + "}," + ACCESS_TOKEN + ":" + token + "}";
 
         //Request response data
@@ -78,7 +104,7 @@ public class DetailsActivity extends AppCompatActivity {
      */
     private void requestData(String data) {
         try {
-            request = new JsonObjectRequest(Request.Method.POST, URL_BASE, new JSONObject(data),
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL_BASE_DETAILS, new JSONObject(data),
                     new Response.Listener<JSONObject>() {
 
                         @Override
@@ -100,6 +126,7 @@ public class DetailsActivity extends AppCompatActivity {
                                         Boolean isOpen = jsonObject.getBoolean("is_open");
                                         String thumbnail = images.getString("thumbnail_medium");
 
+                                        // Refresh screen UI
                                         refreshUI(name, intro, message, isOpen, thumbnail);
 
                                     } catch (JSONException e) {
@@ -135,6 +162,8 @@ public class DetailsActivity extends AppCompatActivity {
 
     /**
      * Refresh UI
+     * <p>
+     * Refresh screen view
      *
      * @param name      restaurant name
      * @param intro     restaurant intro
@@ -158,44 +187,55 @@ public class DetailsActivity extends AppCompatActivity {
         tvIntro.setTypeface(typeface);
 
         tvOpen.setTypeface(typeface);
+        tvOpen.setTextColor(ContextCompat.getColor(DetailsActivity.this, R.color.colorAccent));
 
         if (restaurantData.isOpen()) {
             tvOpen.setText(R.string.restaurant_open);
-            tvOpen.setTextColor(ContextCompat.getColor(DetailsActivity.this, R.color.colorGreen));
         } else {
             tvOpen.setText(R.string.restaurant_closed);
-            tvOpen.setTextColor(ContextCompat.getColor(DetailsActivity.this, R.color.colorRed));
         }
 
-        // Load thumbnail url data
+        //Load thumbnail url data
         Picasso.with(DetailsActivity.this).load(imageData.getUrl()).fit().into(ivThumbnail);
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-
-        // Cancel all volley requests
-        Volley.newRequestQueue(getApplicationContext()).cancelAll(request);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Add menu items to the action bar if it is present.
+        //Add menu items to the action bar
         getMenuInflater().inflate(R.menu.menu_detail, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here.
+        //Handle action bar item clicks
         int id = item.getItemId();
 
         if (id == R.id.action_logout) {
-            // Todo Logout logic
-            System.out.println("############### LOGIN BUTTON CLICKED");
+            //Logout action
+            logout();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Logout
+     * <p>
+     * Clears stored preferences after user logout
+     */
+    public void logout() {
+        SharedPreferences preferences = this.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.remove(ACCESS_TOKEN).apply();
+
+        boolean isCleared = editor.commit();
+
+        if (isCleared) {
+            //Go to login screen after logout is successful
+            loginManager.setLoggedIn(false);
+            startActivity(new Intent(DetailsActivity.this, LoginActivity.class));
+            finish();
+        }
     }
 }
