@@ -1,4 +1,4 @@
-package com.example.nikola.task.utils;
+package com.nikola.task.utils;
 
 /**
  * Constants

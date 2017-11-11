@@ -1,15 +1,14 @@
-package com.example.nikola.task.ui;
+package com.nikola.task.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.example.nikola.task.manager.shared_prefs.SharedPrefsManager;
+import com.nikola.task.manager.shared_prefs.SharedPrefsManager;
+import com.nikola.task.utils.Constants;
 
 import java.util.Timer;
 import java.util.TimerTask;
-
-import static com.example.nikola.task.utils.Constants.SPLASH_TIMEOUT_DELAY;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -38,6 +37,6 @@ public class SplashActivity extends AppCompatActivity {
                     finish();
                 }
             }
-        }, SPLASH_TIMEOUT_DELAY);
+        }, Constants.SPLASH_TIMEOUT_DELAY);
     }
 }

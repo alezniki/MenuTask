@@ -1,4 +1,4 @@
-package com.example.nikola.task.ui;
+package com.nikola.task.ui;
 
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -13,24 +13,24 @@ import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.example.nikola.task.R;
-import com.example.nikola.task.entities.ImageData;
-import com.example.nikola.task.entities.RestaurantData;
-import com.example.nikola.task.manager.shared_prefs.SharedPrefsManager;
-import com.example.nikola.task.manager.volley_callback.VolleyServiceListener;
-import com.example.nikola.task.manager.volley_callback.VolleyServiceManager;
+import com.nikola.task.entities.ImageData;
+import com.nikola.task.entities.RestaurantData;
+import com.nikola.task.manager.shared_prefs.SharedPrefsManager;
+import com.nikola.task.manager.volley_callback.VolleyServiceListener;
+import com.nikola.task.manager.volley_callback.VolleyServiceManager;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.example.nikola.task.utils.Constants.ACCESS_TOKEN_KEY;
-import static com.example.nikola.task.utils.Constants.MAJOR_KEY;
-import static com.example.nikola.task.utils.Constants.MAJOR_VALUE;
-import static com.example.nikola.task.utils.Constants.MINOR_KEY;
-import static com.example.nikola.task.utils.Constants.MINOR_VAlUE;
-import static com.example.nikola.task.utils.Constants.TABLE_BEACON;
-import static com.example.nikola.task.utils.Constants.TOKEN_KEY;
-import static com.example.nikola.task.utils.Constants.URL_BASE_DETAILS;
+import static com.nikola.task.utils.Constants.ACCESS_TOKEN_KEY;
+import static com.nikola.task.utils.Constants.MAJOR_KEY;
+import static com.nikola.task.utils.Constants.MAJOR_VALUE;
+import static com.nikola.task.utils.Constants.MINOR_KEY;
+import static com.nikola.task.utils.Constants.MINOR_VAlUE;
+import static com.nikola.task.utils.Constants.TABLE_BEACON;
+import static com.nikola.task.utils.Constants.TOKEN_KEY;
+import static com.nikola.task.utils.Constants.URL_BASE_DETAILS;
 
 public class DetailsActivity extends AppCompatActivity {
 

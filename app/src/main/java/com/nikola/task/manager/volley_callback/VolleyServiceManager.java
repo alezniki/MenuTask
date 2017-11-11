@@ -1,4 +1,4 @@
-package com.example.nikola.task.manager.volley_callback;
+package com.nikola.task.manager.volley_callback;
 
 import android.content.Context;
 

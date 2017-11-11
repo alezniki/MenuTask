@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.nikola.task.ui.DetailsActivity">
+    tools:context="com.example.nikola.task.com.nikola.task.ui.DetailsActivity">
 
     <include layout="@layout/toolbar" />
 

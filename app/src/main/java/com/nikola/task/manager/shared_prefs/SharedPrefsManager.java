@@ -1,10 +1,9 @@
-package com.example.nikola.task.manager.shared_prefs;
+package com.nikola.task.manager.shared_prefs;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import static com.example.nikola.task.utils.Constants.LOGIN_KEY;
-import static com.example.nikola.task.utils.Constants.SHARED_PREFS;
+import com.nikola.task.utils.Constants;
 
 /**
  * Shared Preferences Manager
@@ -43,7 +42,7 @@ public class SharedPrefsManager {
      * Setup method
      */
     private void setup() {
-        sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFS, Context.MODE_PRIVATE);
     }
 
     /**
@@ -52,7 +51,7 @@ public class SharedPrefsManager {
      * @return logged in
      */
     public boolean isLoggedIn() {
-        return sharedPreferences.getBoolean(LOGIN_KEY, false);
+        return sharedPreferences.getBoolean(Constants.LOGIN_KEY, false);
     }
 
     /**
@@ -62,7 +61,7 @@ public class SharedPrefsManager {
      */
     public void setLoggedIn(boolean isLogged) {
         editor = sharedPreferences.edit();
-        editor.putBoolean(LOGIN_KEY, isLogged).apply();
+        editor.putBoolean(Constants.LOGIN_KEY, isLogged).apply();
     }
 
     /**

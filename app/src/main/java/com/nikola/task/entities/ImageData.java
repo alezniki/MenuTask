@@ -1,4 +1,4 @@
-package com.example.nikola.task.entities;
+package com.nikola.task.entities;
 
 /**
  * Image Data Item
