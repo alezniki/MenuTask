@@ -1,8 +1,6 @@
 package com.example.nikola.task.ui;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -13,26 +11,23 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.nikola.task.R;
 import com.example.nikola.task.entities.ImageData;
 import com.example.nikola.task.entities.RestaurantData;
-import com.example.nikola.task.utils.LoginManager;
+import com.example.nikola.task.manager.shared_prefs.SharedPrefsManager;
+import com.example.nikola.task.manager.volley_callback.VolleyServiceListener;
+import com.example.nikola.task.manager.volley_callback.VolleyServiceManager;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.example.nikola.task.utils.Constants.ACCESS_TOKEN;
-import static com.example.nikola.task.utils.Constants.MAJOR;
+import static com.example.nikola.task.utils.Constants.ACCESS_TOKEN_KEY;
+import static com.example.nikola.task.utils.Constants.MAJOR_KEY;
 import static com.example.nikola.task.utils.Constants.MAJOR_VALUE;
-import static com.example.nikola.task.utils.Constants.MINOR;
+import static com.example.nikola.task.utils.Constants.MINOR_KEY;
 import static com.example.nikola.task.utils.Constants.MINOR_VAlUE;
-import static com.example.nikola.task.utils.Constants.SHARED_PREFS;
 import static com.example.nikola.task.utils.Constants.TABLE_BEACON;
 import static com.example.nikola.task.utils.Constants.TOKEN_KEY;
 import static com.example.nikola.task.utils.Constants.URL_BASE_DETAILS;
@@ -64,15 +59,27 @@ public class DetailsActivity extends AppCompatActivity {
      */
     private ImageView ivThumbnail;
 
-    private LoginManager loginManager;
+    /**
+     * Shared preferences manager
+     */
+    private SharedPrefsManager prefsManager;
+
+    /**
+     * JSON Object
+     */
+    private JSONObject jsonObject;
+
+    /**
+     * Stored token data
+     */
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-
-        loginManager = new LoginManager(getApplicationContext());
+        prefsManager = new SharedPrefsManager(getApplicationContext());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) setSupportActionBar(toolbar);
@@ -83,78 +90,69 @@ public class DetailsActivity extends AppCompatActivity {
         tvOpen = (TextView) findViewById(R.id.tv_open);
         ivThumbnail = (ImageView) findViewById(R.id.iv_thumbnail);
 
-        //Retrieve stored token data
-        SharedPreferences preferences = getApplicationContext().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-        String token = preferences.getString(TOKEN_KEY, "");
+        //Retrieve token data
+        token = prefsManager.getStoredData(TOKEN_KEY, "");
         System.out.println("############# STORED TOKEN DATA " + token);
 
-        //JSON-encoded string
-        String jsonString = "{" + TABLE_BEACON + ":{" + MAJOR + ":" + MAJOR_VALUE + "," + MINOR + ":" + MINOR_VAlUE + "}," + ACCESS_TOKEN + ":" + token + "}";
-
         //Request response data
-        requestData(jsonString);
+        requestData();
     }
+
 
     /**
      * Request JSON data
      * <p>
      * Request data via Volley POST request
-     *
-     * @param data json data
      */
-    private void requestData(String data) {
+    private void requestData() {
+
+        String jsonString = "{" + TABLE_BEACON + ":{" + MAJOR_KEY + ":" + MAJOR_VALUE + "," + MINOR_KEY + ":" + MINOR_VAlUE + "}," + ACCESS_TOKEN_KEY + ":" + token + "}";
+
+        VolleyServiceManager volleyServiceManager = new VolleyServiceManager(getApplicationContext(), new VolleyServiceListener() {
+
+            @Override
+            public void onResponseCallback(final JSONObject response) {
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("############# DETAILS RESPONSE: " + response);
+
+                        try {
+                            jsonObject = response.getJSONObject("restaurant");
+                            JSONObject images = jsonObject.getJSONObject("images");
+
+                            String name = jsonObject.getString("name");
+                            String intro = jsonObject.getString("intro");
+                            String message = jsonObject.getString("welcome_message");
+                            Boolean isOpen = jsonObject.getBoolean("is_open");
+                            String thumbnail = images.getString("thumbnail_medium");
+
+                            // Refresh screen UI
+                            refreshUI(name, intro, message, isOpen, thumbnail);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onErrorCallback(final VolleyError error) {
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        error.printStackTrace();
+                        System.out.println("############# DETAILS ERROR: " + error.toString());
+                    }
+                });
+            }
+        });
+
         try {
-            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL_BASE_DETAILS, new JSONObject(data),
-                    new Response.Listener<JSONObject>() {
-
-                        @Override
-                        public void onResponse(final JSONObject response) {
-
-                            //Prevent server errors
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    System.out.println("############# DETAILS SCREEN VOLLEY RESPONSE: " + response);
-
-                                    try {
-                                        JSONObject jsonObject = response.getJSONObject("restaurant");
-                                        JSONObject images = jsonObject.getJSONObject("images");
-
-                                        String name = jsonObject.getString("name");
-                                        String intro = jsonObject.getString("intro");
-                                        String message = jsonObject.getString("welcome_message");
-                                        Boolean isOpen = jsonObject.getBoolean("is_open");
-                                        String thumbnail = images.getString("thumbnail_medium");
-
-                                        // Refresh screen UI
-                                        refreshUI(name, intro, message, isOpen, thumbnail);
-
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
-                        }
-                    },
-
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(final VolleyError error) {
-
-                            //Prevent server errors
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    error.printStackTrace();
-                                    System.out.println("############# DETAILS SCREEN VOLLEY ERROR: " + error.toString());
-                                }
-                            });
-                        }
-                    });
-
-            //Request volley queue
-            Volley.newRequestQueue(this).add(request);
-
+            // Request Volley data
+            volleyServiceManager.requestVolleyData(URL_BASE_DETAILS, jsonString);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -208,11 +206,10 @@ public class DetailsActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        //Handle action bar item clicks
+        //Handle item clicks
         int id = item.getItemId();
 
         if (id == R.id.action_logout) {
-            //Logout action
             logout();
         }
 
@@ -222,20 +219,11 @@ public class DetailsActivity extends AppCompatActivity {
     /**
      * Logout
      * <p>
-     * Clears stored preferences after user logout
+     * Clear stored preferences after user logout
      */
     public void logout() {
-        SharedPreferences preferences = this.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.remove(ACCESS_TOKEN).apply();
-
-        boolean isCleared = editor.commit();
-
-        if (isCleared) {
-            //Go to login screen after logout is successful
-            loginManager.setLoggedIn(false);
-            startActivity(new Intent(DetailsActivity.this, LoginActivity.class));
-            finish();
-        }
+        prefsManager.clearData(token);
+        startActivity(new Intent(DetailsActivity.this, LoginActivity.class));
+        finish();
     }
 }

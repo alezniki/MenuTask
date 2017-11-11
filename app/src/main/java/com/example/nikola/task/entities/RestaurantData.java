@@ -2,6 +2,8 @@ package com.example.nikola.task.entities;
 
 /**
  * Restaurant Item Data
+ *
+ * @author Nikola Aleksic
  */
 public class RestaurantData {
 
