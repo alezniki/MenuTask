@@ -11,6 +11,8 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.nikola.task.utils.Constants.VOLLEY_REQUEST;
+
 /**
  * Volley Service Manager
  *
@@ -65,7 +67,14 @@ public class VolleyServiceManager {
                 });
 
         //Request volley queue
-        Volley.newRequestQueue(context).add(request);
+        Volley.newRequestQueue(context).add(request).setTag(VOLLEY_REQUEST);
+    }
+
+    /**
+     * Cancel Volley Request
+     */
+    public void cancelVolleyRequest(){
+        Volley.newRequestQueue(context).cancelAll(VOLLEY_REQUEST);
     }
 
 

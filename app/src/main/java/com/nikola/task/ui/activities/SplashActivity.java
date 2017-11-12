@@ -1,4 +1,4 @@
-package com.nikola.task.ui;
+package com.nikola.task.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;

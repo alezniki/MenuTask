@@ -1,4 +1,4 @@
-package com.nikola.task.ui;
+package com.nikola.task.ui.activities;
 
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -31,6 +31,11 @@ public class LoginActivity extends AppCompatActivity {
      * Shared preferences manager
      */
     private SharedPrefsManager prefsManager;
+
+    /**
+     * Volley Service Manager
+     */
+    private VolleyServiceManager volleyServiceManager;
 
     /**
      * Token data
@@ -91,7 +96,7 @@ public class LoginActivity extends AppCompatActivity {
 
         String jsonString = "{" + EMAIL_KEY + ":" + EMAIL_VALUE + "," + PASSWORD_KEY + ":" + PASSWORD_VALUE + "}";
 
-        VolleyServiceManager volleyServiceManager = new VolleyServiceManager(getApplicationContext(), new VolleyServiceListener() {
+        volleyServiceManager = new VolleyServiceManager(getApplicationContext(), new VolleyServiceListener() {
 
             @Override
             public void onResponseCallback(final JSONObject response) {
@@ -139,7 +144,12 @@ public class LoginActivity extends AppCompatActivity {
      * @param data token data
      */
     private void storeTokenData(String data) {
-
         prefsManager.storeData(TOKEN_KEY, data);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        volleyServiceManager.cancelVolleyRequest();
     }
 }

@@ -1,4 +1,4 @@
-package com.nikola.task.ui;
+package com.nikola.task.ui.activities;
 
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -65,6 +65,11 @@ public class DetailsActivity extends AppCompatActivity {
     private SharedPrefsManager prefsManager;
 
     /**
+     * Volley Service Manager
+     */
+    private VolleyServiceManager volleyServiceManager;
+
+    /**
      * JSON Object
      */
     private JSONObject jsonObject;
@@ -98,7 +103,6 @@ public class DetailsActivity extends AppCompatActivity {
         requestData();
     }
 
-
     /**
      * Request JSON data
      * <p>
@@ -108,7 +112,7 @@ public class DetailsActivity extends AppCompatActivity {
 
         String jsonString = "{" + TABLE_BEACON + ":{" + MAJOR_KEY + ":" + MAJOR_VALUE + "," + MINOR_KEY + ":" + MINOR_VAlUE + "}," + ACCESS_TOKEN_KEY + ":" + token + "}";
 
-        VolleyServiceManager volleyServiceManager = new VolleyServiceManager(getApplicationContext(), new VolleyServiceListener() {
+        volleyServiceManager = new VolleyServiceManager(getApplicationContext(), new VolleyServiceListener() {
 
             @Override
             public void onResponseCallback(final JSONObject response) {
@@ -225,5 +229,11 @@ public class DetailsActivity extends AppCompatActivity {
         prefsManager.clearData(token);
         startActivity(new Intent(DetailsActivity.this, LoginActivity.class));
         finish();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        volleyServiceManager.cancelVolleyRequest();
     }
 }

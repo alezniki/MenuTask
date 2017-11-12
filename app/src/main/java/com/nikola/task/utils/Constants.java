@@ -30,13 +30,17 @@ public class Constants {
     /**
      * Shared preferences constants
      */
-    public static final String SHARED_PREFS = "shared_prefs";
-    public static final String TOKEN_KEY = "token_key";
-    public static final String LOGIN_KEY = "login_key";
+    public static final String SHARED_PREFS = "SHARED_PREFS";
+    public static final String TOKEN_KEY = "TOKEN_KEY";
+    public static final String LOGIN_KEY = "LOGIN_KEY";
 
     /**
      * Time constants
      */
     public final static int SPLASH_TIMEOUT_DELAY = 2000;
 
+    /**
+     * Volley request constants
+     */
+    public final static String VOLLEY_REQUEST = "VOLLEY_REQUEST";
 }

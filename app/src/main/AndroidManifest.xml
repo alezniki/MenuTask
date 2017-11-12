@@ -16,14 +16,14 @@
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
         <!-- Login Screen Activity -->
-        <activity android:name="com.nikola.task.ui.LoginActivity" />
+        <activity android:name="com.nikola.task.ui.activities.LoginActivity" />
 
         <!-- Details Screen Activity -->
-        <activity android:name="com.nikola.task.ui.DetailsActivity" />
+        <activity android:name="com.nikola.task.ui.activities.DetailsActivity" />
 
         <!--Splash Screen Activity-->
         <activity
-            android:name="com.nikola.task.ui.SplashActivity"
+            android:name="com.nikola.task.ui.activities.SplashActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
