@@ -2,8 +2,10 @@ package com.nikola.task.manager.volley_callback;
 
 import android.content.Context;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
@@ -12,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import static com.nikola.task.utils.Constants.VOLLEY_REQUEST;
+import static com.nikola.task.utils.Constants.VOLLEY_TIMEOUT_SOCKET;
 
 /**
  * Volley Service Manager
@@ -68,14 +71,16 @@ public class VolleyServiceManager {
 
         //Request volley queue
         Volley.newRequestQueue(context).add(request).setTag(VOLLEY_REQUEST);
+
+        //Set retry policy
+        RetryPolicy policy = new DefaultRetryPolicy(VOLLEY_TIMEOUT_SOCKET, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        request.setRetryPolicy(policy);
     }
 
     /**
      * Cancel Volley Request
      */
-    public void cancelVolleyRequest(){
+    public void cancelVolleyRequest() {
         Volley.newRequestQueue(context).cancelAll(VOLLEY_REQUEST);
     }
-
-
 }

@@ -25,25 +25,27 @@
         <!--Restaurant name-->
         <TextView
             android:id="@+id/tv_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <!--Is open-->
-        <TextView
-            android:id="@+id/tv_open"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <!--Welcome message-->
         <TextView
             android:id="@+id/tv_message"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <!--Intro-->
         <TextView
             android:id="@+id/tv_intro"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="9"
+            android:scrollbars="vertical" />
+
+        <!--Is open-->
+        <TextView
+            android:id="@+id/tv_open"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
 </LinearLayout>

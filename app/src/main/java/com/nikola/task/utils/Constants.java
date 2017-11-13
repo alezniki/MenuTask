@@ -28,6 +28,11 @@ public class Constants {
     public final static String URL_BASE_DETAILS = "https://usemenu.com/playground/public/api/v2/restaurant/info?app_version=2.8.1";
 
     /**
+     * Splash screen constants
+     */
+    public final static int SPLASH_TIMEOUT_DELAY = 2000;
+
+    /**
      * Shared preferences constants
      */
     public static final String SHARED_PREFS = "SHARED_PREFS";
@@ -35,12 +40,8 @@ public class Constants {
     public static final String LOGIN_KEY = "LOGIN_KEY";
 
     /**
-     * Time constants
-     */
-    public final static int SPLASH_TIMEOUT_DELAY = 2000;
-
-    /**
-     * Volley request constants
+     * Volley constants
      */
     public final static String VOLLEY_REQUEST = "VOLLEY_REQUEST";
+    public final static int VOLLEY_TIMEOUT_SOCKET = 10000;
 }

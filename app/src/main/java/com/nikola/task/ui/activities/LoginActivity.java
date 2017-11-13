@@ -28,6 +28,16 @@ import static com.nikola.task.utils.Constants.URL_BASE_LOGIN;
 public class LoginActivity extends AppCompatActivity {
 
     /**
+     * Email input view
+     */
+    private EditText etEmail;
+
+    /**
+     * Passwort input view
+     */
+    private EditText etPassword;
+
+    /**
      * Shared preferences manager
      */
     private SharedPrefsManager prefsManager;
@@ -47,12 +57,12 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        Typeface typeface = Typeface.createFromAsset(getAssets(), getString(R.string.font_asset));
-
         prefsManager = new SharedPrefsManager(getApplicationContext());
 
-        final EditText etEmail = (EditText) findViewById(R.id.et_login_email);
-        final EditText etPassword = (EditText) findViewById(R.id.et_login_password);
+        Typeface typeface = Typeface.createFromAsset(getAssets(), getString(R.string.font_asset));
+
+        etEmail = (EditText) findViewById(R.id.et_login_email);
+        etPassword = (EditText) findViewById(R.id.et_login_password);
         Button btnLogin = (Button) findViewById(R.id.btn_login);
 
         //Set type face
@@ -63,23 +73,7 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //Validate user email and password
-                boolean isValid = etEmail.getText().toString().equals(EMAIL_VALUE) && etPassword.getText().toString().equals(PASSWORD_VALUE);
-
-                if (isValid) {
-                    prefsManager.setLoggedIn(true);
-                } else {
-                    prefsManager.setLoggedIn(false);
-                    //Alert user that validation is not good
-                    Toast.makeText(LoginActivity.this, R.string.validation_alert, Toast.LENGTH_SHORT).show();
-                }
-
-                if (prefsManager.isLoggedIn()) {
-                    //Go to details screen after login is successful and destroy login activity
-                    startActivity(new Intent(LoginActivity.this, DetailsActivity.class));
-                    finish();
-                }
+                loginValidation();
             }
         });
 
@@ -93,7 +87,6 @@ public class LoginActivity extends AppCompatActivity {
      * Request data via Volley POST request
      */
     private void requestData() {
-
         String jsonString = "{" + EMAIL_KEY + ":" + EMAIL_VALUE + "," + PASSWORD_KEY + ":" + PASSWORD_VALUE + "}";
 
         volleyServiceManager = new VolleyServiceManager(getApplicationContext(), new VolleyServiceListener() {
@@ -104,10 +97,11 @@ public class LoginActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        System.out.println("############# LOGIN RESPONSE: " + response);
+
                         try {
                             token = response.getString("access_token");
                             storeTokenData(token);
-                            System.out.println("############# LOGIN RESPONSE: " + response);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -121,8 +115,8 @@ public class LoginActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        error.printStackTrace();
                         System.out.println("############# LOGIN ERROR: " + error.toString());
+                        error.printStackTrace();
                     }
                 });
             }
@@ -151,5 +145,30 @@ public class LoginActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         volleyServiceManager.cancelVolleyRequest();
+    }
+
+    /**
+     * Login validation
+     * <p>
+     * Validate input fields and set login action
+     */
+    private void loginValidation() {
+
+        //Validate user email and password
+        boolean isValid = etEmail.getText().toString().equals(EMAIL_VALUE) && etPassword.getText().toString().equals(PASSWORD_VALUE);
+
+        if (isValid) {
+            prefsManager.setLoggedIn(true);
+        } else {
+            prefsManager.setLoggedIn(false);
+            //Alert user that validation is not good
+            Toast.makeText(LoginActivity.this, R.string.validation_alert, Toast.LENGTH_SHORT).show();
+        }
+
+        if (prefsManager.isLoggedIn()) {
+            //Go to details screen after login is successful and destroy login activity
+            startActivity(new Intent(LoginActivity.this, DetailsActivity.class));
+            finish();
+        }
     }
 }
