@@ -10,22 +10,22 @@ public class RestaurantData {
     /**
      * Restaurant name
      */
-    private String name;
+    private final String name;
 
     /**
      * Restaurant intro
      */
-    private String intro;
+    private final String intro;
 
     /**
      * Welcome message
      */
-    private String message;
+    private final String message;
 
     /**
      * Is restaurant open
      */
-    private boolean isOpen;
+    private final boolean isOpen;
 
     /**
      * Constructor

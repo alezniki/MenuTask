@@ -33,7 +33,6 @@ import static com.nikola.task.utils.Constants.MAJOR_VALUE;
 import static com.nikola.task.utils.Constants.MINOR_KEY;
 import static com.nikola.task.utils.Constants.MINOR_VAlUE;
 import static com.nikola.task.utils.Constants.TABLE_BEACON;
-import static com.nikola.task.utils.Constants.TOKEN_KEY;
 import static com.nikola.task.utils.Constants.URL_BASE_DETAILS;
 
 public class DetailsActivity extends AppCompatActivity {
@@ -106,7 +105,7 @@ public class DetailsActivity extends AppCompatActivity {
         progressBar = new MenuProgressBar(this);
 
         //Retrieve token data
-        token = prefsManager.getStoredData(TOKEN_KEY, "");
+        token = prefsManager.getStoredData();
         System.out.println("############# STORED TOKEN DATA " + token);
 
         //Request response data

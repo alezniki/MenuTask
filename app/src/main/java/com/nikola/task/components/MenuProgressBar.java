@@ -18,7 +18,7 @@ public class MenuProgressBar {
     /**
      * Context context
      */
-    private Context context;
+    private final Context context;
 
     /**
      * Progress bar view

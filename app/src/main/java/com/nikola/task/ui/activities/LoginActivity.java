@@ -24,7 +24,6 @@ import static com.nikola.task.utils.Constants.EMAIL_KEY;
 import static com.nikola.task.utils.Constants.EMAIL_VALUE;
 import static com.nikola.task.utils.Constants.PASSWORD_KEY;
 import static com.nikola.task.utils.Constants.PASSWORD_VALUE;
-import static com.nikola.task.utils.Constants.TOKEN_KEY;
 import static com.nikola.task.utils.Constants.URL_BASE_LOGIN;
 
 public class LoginActivity extends AppCompatActivity {
@@ -133,7 +132,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param data token data
      */
     private void storeTokenData(String data) {
-        prefsManager.storeData(TOKEN_KEY, data);
+        prefsManager.storeData(data);
     }
 
     @Override

@@ -15,7 +15,7 @@ public class SharedPrefsManager {
     /**
      * Context
      */
-    private Context context;
+    private final Context context;
 
     /**
      * Shared preferences
@@ -84,21 +84,17 @@ public class SharedPrefsManager {
     /**
      * Store prefs data
      *
-     * @param key   data key
      * @param value data value
      */
-    public void storeData(String key, String value) {
+    public void storeData(String value) {
         editor = sharedPreferences.edit();
-        editor.putString(key, value).apply();
+        editor.putString(Constants.TOKEN_KEY, value).apply();
     }
 
     /**
      * Get stored prefs data
-     *
-     * @param key   data key
-     * @param value data value
      */
-    public String getStoredData(String key, String value) {
-        return sharedPreferences.getString(key, value);
+    public String getStoredData() {
+        return sharedPreferences.getString(Constants.TOKEN_KEY, "");
     }
 }

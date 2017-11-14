@@ -26,12 +26,12 @@ public class VolleyServiceManager {
     /**
      * Context
      */
-    private Context context;
+    private final Context context;
 
     /**
      * Volley Service listener
      */
-    private VolleyServiceListener listener;
+    private final VolleyServiceListener listener;
 
     /**
      * Constructor

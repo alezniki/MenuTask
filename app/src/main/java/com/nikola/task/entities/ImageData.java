@@ -10,7 +10,7 @@ public class ImageData {
     /**
      * Image thumbnail url
      */
-    private String url;
+    private final String url;
 
     /**
      * Constructor
