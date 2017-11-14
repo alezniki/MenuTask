@@ -73,7 +73,7 @@ public class SharedPrefsManager {
         editor = sharedPreferences.edit();
         editor.remove(data).apply();
 
-        // Is prefs data clear
+        //Is prefs data clear
         boolean isClear = editor.commit();
 
         if (isClear) {

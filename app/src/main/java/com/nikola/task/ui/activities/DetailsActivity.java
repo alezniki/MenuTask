@@ -1,7 +1,7 @@
 package com.nikola.task.ui.activities;
 
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -14,16 +14,18 @@ import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.example.nikola.task.R;
+import com.nikola.task.components.MenuProgressBar;
 import com.nikola.task.entities.ImageData;
 import com.nikola.task.entities.RestaurantData;
 import com.nikola.task.manager.shared_prefs.SharedPrefsManager;
 import com.nikola.task.manager.volley_callback.VolleyServiceListener;
 import com.nikola.task.manager.volley_callback.VolleyServiceManager;
-import com.nikola.task.ui.view.MenuProgressBar;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.nikola.task.utils.Constants.ACCESS_TOKEN_KEY;
 import static com.nikola.task.utils.Constants.MAJOR_KEY;
@@ -82,11 +84,6 @@ public class DetailsActivity extends AppCompatActivity {
     private String token;
 
     /**
-     * Typeface
-     */
-    private Typeface typeface;
-
-    /**
      * Menu progress bar
      */
     private MenuProgressBar progressBar;
@@ -100,8 +97,6 @@ public class DetailsActivity extends AppCompatActivity {
         if (toolbar != null) setSupportActionBar(toolbar);
 
         prefsManager = new SharedPrefsManager(getApplicationContext());
-
-        typeface = Typeface.createFromAsset(getAssets(), getString(R.string.font_asset));
 
         tvName = (TextView) findViewById(R.id.tv_name);
         tvIntro = (TextView) findViewById(R.id.tv_intro);
@@ -175,7 +170,7 @@ public class DetailsActivity extends AppCompatActivity {
         });
 
         try {
-            // Request Volley data
+            //Request Volley data
             volleyServiceManager.requestVolleyData(URL_BASE_DETAILS, jsonString);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -198,20 +193,14 @@ public class DetailsActivity extends AppCompatActivity {
         ImageData imageData = new ImageData(thumbnail);
 
         tvName.setText(restaurantData.getName());
-        tvName.setTypeface(typeface);
-
         tvMessage.setText(restaurantData.getMessage());
-        tvMessage.setTypeface(typeface);
 
         tvIntro.setText(restaurantData.getIntro());
-        tvIntro.setTypeface(typeface);
         tvIntro.setMovementMethod(new ScrollingMovementMethod());
-
-        tvOpen.setTypeface(typeface);
-        tvOpen.setTextColor(ContextCompat.getColor(DetailsActivity.this, R.color.colorAccent));
 
         if (restaurantData.isOpen()) {
             tvOpen.setText(R.string.restaurant_open);
+            tvOpen.setTextColor(ContextCompat.getColor(DetailsActivity.this, R.color.colorAccent));
         } else {
             tvOpen.setText(R.string.restaurant_closed);
         }
@@ -229,7 +218,6 @@ public class DetailsActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        //Handle item clicks
         int id = item.getItemId();
 
         if (id == R.id.action_logout) {
@@ -254,5 +242,11 @@ public class DetailsActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         volleyServiceManager.cancelVolleyRequest();
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        //Inject Calligraphy into activity context
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 }

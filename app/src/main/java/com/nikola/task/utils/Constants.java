@@ -30,7 +30,7 @@ public class Constants {
     /**
      * Splash screen constants
      */
-    public final static int SPLASH_TIMEOUT_DELAY = 2000;
+    public final static int SPLASH_TIMEOUT_DELAY = 3000;
 
     /**
      * Shared preferences constants
@@ -43,5 +43,5 @@ public class Constants {
      * Volley constants
      */
     public final static String VOLLEY_REQUEST = "VOLLEY_REQUEST";
-    public final static int VOLLEY_TIMEOUT_SOCKET = 10000;
+    public final static int VOLLEY_TIMEOUT_SOCKET = 12000;
 }

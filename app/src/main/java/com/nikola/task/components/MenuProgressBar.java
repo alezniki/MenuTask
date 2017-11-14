@@ -1,4 +1,4 @@
-package com.nikola.task.ui.view;
+package com.nikola.task.components;
 
 import android.app.Activity;
 import android.content.Context;

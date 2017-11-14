@@ -1,7 +1,7 @@
 package com.nikola.task.ui.activities;
 
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -17,6 +17,8 @@ import com.nikola.task.manager.volley_callback.VolleyServiceManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.nikola.task.utils.Constants.EMAIL_KEY;
 import static com.nikola.task.utils.Constants.EMAIL_VALUE;
@@ -59,16 +61,9 @@ public class LoginActivity extends AppCompatActivity {
 
         prefsManager = new SharedPrefsManager(getApplicationContext());
 
-        Typeface typeface = Typeface.createFromAsset(getAssets(), getString(R.string.font_asset));
-
         etEmail = (EditText) findViewById(R.id.et_login_email);
         etPassword = (EditText) findViewById(R.id.et_login_password);
         Button btnLogin = (Button) findViewById(R.id.btn_login);
-
-        //Set type face
-        etEmail.setTypeface(typeface);
-        etPassword.setTypeface(typeface);
-        btnLogin.setTypeface(typeface);
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -170,5 +165,11 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(new Intent(LoginActivity.this, DetailsActivity.class));
             finish();
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        //Inject Calligraphy into activity context
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 }
