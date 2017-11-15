@@ -4,7 +4,9 @@
     <string name="password_hint">Enter password</string>
     <string name="login">Login</string>
     <string name="logout">Logout</string>
-    <string name="validation_alert">Login validation is not good</string>
+    <string name="input_alert">Email and password must be entered</string>
+    <string name="validation_alert">Validation is not good</string>
+    <string name="connection_alert">Connection timed out</string>
     <string name="restaurant_open">Open</string>
     <string name="restaurant_closed">Closed</string>
     <string name="font_asset">font/Roboto-Light.ttf</string>

@@ -55,6 +55,9 @@ public class MenuProgressBar {
         //Add progress bar to holder view
         relativeLayout.addView(progressBar, 150, 150);
         holder.addView(relativeLayout, params);
+
+        //Disable by default
+        disableProgress();
     }
 
     /**

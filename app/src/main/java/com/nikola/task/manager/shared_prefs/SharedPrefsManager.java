@@ -5,6 +5,9 @@ import android.content.SharedPreferences;
 
 import com.nikola.task.utils.Constants;
 
+import static com.nikola.task.utils.Constants.LOGIN_KEY;
+import static com.nikola.task.utils.Constants.TOKEN_KEY;
+
 /**
  * Shared Preferences Manager
  *
@@ -51,7 +54,7 @@ public class SharedPrefsManager {
      * @return logged in
      */
     public boolean isLoggedIn() {
-        return sharedPreferences.getBoolean(Constants.LOGIN_KEY, false);
+        return sharedPreferences.getBoolean(LOGIN_KEY, false);
     }
 
     /**
@@ -61,19 +64,19 @@ public class SharedPrefsManager {
      */
     public void setLoggedIn(boolean isLogged) {
         editor = sharedPreferences.edit();
-        editor.putBoolean(Constants.LOGIN_KEY, isLogged).apply();
+        editor.putBoolean(LOGIN_KEY, isLogged).apply();
     }
 
     /**
-     * Clear prefs data
+     * Clear token data
      *
-     * @param data prefs data
+     * @param data token data
      */
-    public void clearData(String data) {
+    public void clearToken(String data) {
         editor = sharedPreferences.edit();
         editor.remove(data).apply();
 
-        //Is prefs data clear
+        //Is data cleared
         boolean isClear = editor.commit();
 
         if (isClear) {
@@ -82,19 +85,19 @@ public class SharedPrefsManager {
     }
 
     /**
-     * Store prefs data
+     * Store token data
      *
-     * @param value data value
+     * @param value token value
      */
-    public void storeData(String value) {
+    public void storeToken(String value) {
         editor = sharedPreferences.edit();
-        editor.putString(Constants.TOKEN_KEY, value).apply();
+        editor.putString(TOKEN_KEY, value).apply();
     }
 
     /**
-     * Get stored prefs data
+     * Get stored token data
      */
-    public String getStoredData() {
-        return sharedPreferences.getString(Constants.TOKEN_KEY, "");
+    public String getTokenData() {
+        return sharedPreferences.getString(TOKEN_KEY, "");
     }
 }

@@ -11,9 +11,7 @@ public class Constants {
      * Login screen constants
      */
     public final static String EMAIL_KEY = "email";
-    public final static String EMAIL_VALUE = "test@testmenu.com";
     public final static String PASSWORD_KEY = "password";
-    public final static String PASSWORD_VALUE = "test1234";
     public final static String URL_BASE_LOGIN = "https://usemenu.com/playground/public/api/v2/customer/login?app_version=2.8.1";
 
     /**
@@ -30,7 +28,7 @@ public class Constants {
     /**
      * Splash screen constants
      */
-    public final static int SPLASH_TIMEOUT_DELAY = 3000;
+    public final static int SPLASH_TIMEOUT_DELAY = 2500;
 
     /**
      * Shared preferences constants

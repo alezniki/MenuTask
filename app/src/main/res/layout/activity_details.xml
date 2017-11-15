@@ -6,6 +6,7 @@
     android:orientation="vertical"
     tools:context="com.nikola.task.ui.activities.DetailsActivity">
 
+    <!--Include navigation bar-->
     <include layout="@layout/toolbar" />
 
     <!--Restaurant image-->
@@ -13,36 +14,38 @@
         android:id="@+id/iv_thumbnail"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3"
+        android:layout_weight="2"
         tools:ignore="ContentDescription" />
 
+    <!--Restaurant info layout-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2"
+        android:layout_weight="1"
         android:orientation="vertical">
 
-        <!--Restaurant name-->
+        <!--Name label-->
         <TextView
             android:id="@+id/tv_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <!--Welcome message-->
+        <!--Welcome message label-->
         <TextView
             android:id="@+id/tv_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <!--Intro-->
+        <!--Intro label-->
         <TextView
             android:id="@+id/tv_intro"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="9"
-            android:scrollbars="vertical" />
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:scrollbars="vertical"
+            tools:ignore="NestedWeights" />
 
-        <!--Is open-->
+        <!--Is open label-->
         <TextView
             android:id="@+id/tv_open"
             android:layout_width="match_parent"

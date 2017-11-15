@@ -79,6 +79,8 @@ public class VolleyServiceManager {
 
     /**
      * Cancel Volley Request
+     * <p>
+     * Cancel all requests with the given tag
      */
     public void cancelVolleyRequest() {
         Volley.newRequestQueue(context).cancelAll(VOLLEY_REQUEST);

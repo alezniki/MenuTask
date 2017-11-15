@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.example.nikola.task.R;
+import com.nikola.task.components.MenuProgressBar;
 import com.nikola.task.manager.shared_prefs.SharedPrefsManager;
 import com.nikola.task.manager.volley_callback.VolleyServiceListener;
 import com.nikola.task.manager.volley_callback.VolleyServiceManager;
@@ -21,9 +22,7 @@ import org.json.JSONObject;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.nikola.task.utils.Constants.EMAIL_KEY;
-import static com.nikola.task.utils.Constants.EMAIL_VALUE;
 import static com.nikola.task.utils.Constants.PASSWORD_KEY;
-import static com.nikola.task.utils.Constants.PASSWORD_VALUE;
 import static com.nikola.task.utils.Constants.URL_BASE_LOGIN;
 
 public class LoginActivity extends AppCompatActivity {
@@ -34,9 +33,14 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etEmail;
 
     /**
-     * Passwort input view
+     * Password input view
      */
     private EditText etPassword;
+
+    /**
+     * Login button
+     */
+    private Button btnLogin;
 
     /**
      * Shared preferences manager
@@ -49,30 +53,49 @@ public class LoginActivity extends AppCompatActivity {
     private VolleyServiceManager volleyServiceManager;
 
     /**
+     * Menu progress bar
+     */
+    private MenuProgressBar progressBar;
+
+    /**
      * Token data
      */
     private String token;
+
+    /**
+     * Email data
+     */
+    private String email;
+
+    /**
+     * Password data
+     */
+    private String password;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        prefsManager = new SharedPrefsManager(getApplicationContext());
-
         etEmail = (EditText) findViewById(R.id.et_login_email);
         etPassword = (EditText) findViewById(R.id.et_login_password);
-        Button btnLogin = (Button) findViewById(R.id.btn_login);
+        btnLogin = (Button) findViewById(R.id.btn_login);
+
+        prefsManager = new SharedPrefsManager(getApplicationContext());
+        progressBar = new MenuProgressBar(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Validate credentials
                 loginValidation();
             }
         });
-
-        //Request response data
-        requestData();
     }
 
     /**
@@ -81,21 +104,32 @@ public class LoginActivity extends AppCompatActivity {
      * Request data via Volley POST request
      */
     private void requestData() {
-        String jsonString = "{" + EMAIL_KEY + ":" + EMAIL_VALUE + "," + PASSWORD_KEY + ":" + PASSWORD_VALUE + "}";
+
+        //Enable progress bar
+        progressBar.enableProgress();
+
+        String jsonString = "{" + EMAIL_KEY + ":" + email + "," + PASSWORD_KEY + ":" + password + "}";
 
         volleyServiceManager = new VolleyServiceManager(getApplicationContext(), new VolleyServiceListener() {
-
             @Override
             public void onResponseCallback(final JSONObject response) {
-
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         System.out.println("############# LOGIN RESPONSE: " + response);
 
                         try {
+
+                            // Store token data
                             token = response.getString("access_token");
-                            storeTokenData(token);
+                            prefsManager.storeToken(token);
+                            prefsManager.setLoggedIn(true);
+
+                            //Disable progress bar
+                            progressBar.disableProgress();
+
+                            startActivity(new Intent(LoginActivity.this, DetailsActivity.class));
+                            finish();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -105,12 +139,13 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onErrorCallback(final VolleyError error) {
-
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        System.out.println("############# LOGIN ERROR: " + error.toString());
                         error.printStackTrace();
+                        //Disable progress bar and alert user that validation is not good
+                        progressBar.disableProgress();
+                        Toast.makeText(LoginActivity.this, R.string.validation_alert, Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -124,21 +159,14 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Store token data
-     * <p>
-     * Store token data from Json response to shared preferences
-     *
-     * @param data token data
-     */
-    private void storeTokenData(String data) {
-        prefsManager.storeData(data);
-    }
-
     @Override
     protected void onStop() {
         super.onStop();
-        volleyServiceManager.cancelVolleyRequest();
+
+        //Cancel request
+        if (volleyServiceManager != null) {
+            volleyServiceManager.cancelVolleyRequest();
+        }
     }
 
     /**
@@ -148,21 +176,15 @@ public class LoginActivity extends AppCompatActivity {
      */
     private void loginValidation() {
 
-        //Validate user email and password
-        boolean isValid = etEmail.getText().toString().equals(EMAIL_VALUE) && etPassword.getText().toString().equals(PASSWORD_VALUE);
+        //Store login credentials
+        email = etEmail.getText().toString().trim();
+        password = etPassword.getText().toString().trim();
 
-        if (isValid) {
-            prefsManager.setLoggedIn(true);
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(LoginActivity.this, R.string.input_alert, Toast.LENGTH_SHORT).show();
         } else {
-            prefsManager.setLoggedIn(false);
-            //Alert user that validation is not good
-            Toast.makeText(LoginActivity.this, R.string.validation_alert, Toast.LENGTH_SHORT).show();
-        }
-
-        if (prefsManager.isLoggedIn()) {
-            //Go to details screen after login is successful and destroy login activity
-            startActivity(new Intent(LoginActivity.this, DetailsActivity.class));
-            finish();
+            //Request response data
+            requestData();
         }
     }
 

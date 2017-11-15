@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.example.nikola.task.R;
@@ -95,24 +96,29 @@ public class DetailsActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) setSupportActionBar(toolbar);
 
-        prefsManager = new SharedPrefsManager(getApplicationContext());
-
         tvName = (TextView) findViewById(R.id.tv_name);
         tvIntro = (TextView) findViewById(R.id.tv_intro);
         tvMessage = (TextView) findViewById(R.id.tv_message);
         tvOpen = (TextView) findViewById(R.id.tv_open);
         ivThumbnail = (ImageView) findViewById(R.id.iv_thumbnail);
-        progressBar = new MenuProgressBar(this);
 
         //Retrieve token data
-        token = prefsManager.getStoredData();
+        prefsManager = new SharedPrefsManager(getApplicationContext());
+        token = prefsManager.getTokenData();
+
+        //Enable progress bar
+        progressBar = new MenuProgressBar(this);
+        progressBar.enableProgress();
+
         System.out.println("############# STORED TOKEN DATA " + token);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         //Request response data
         requestData();
-
-        //Enable progress bar
-        progressBar.enableProgress();
     }
 
     /**
@@ -121,6 +127,7 @@ public class DetailsActivity extends AppCompatActivity {
      * Request data via Volley POST request
      */
     private void requestData() {
+
         String jsonString = "{" + TABLE_BEACON + ":{" + MAJOR_KEY + ":" + MAJOR_VALUE + "," + MINOR_KEY + ":" + MINOR_VAlUE + "}," + ACCESS_TOKEN_KEY + ":" + token + "}";
 
         volleyServiceManager = new VolleyServiceManager(getApplicationContext(), new VolleyServiceListener() {
@@ -129,7 +136,7 @@ public class DetailsActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        System.out.println("############# DETAILS RESPONSE: " + response);
+                        System.out.println("############# DETAILS SCREEN RESPONSE: " + response);
 
                         try {
                             jsonObject = response.getJSONObject("restaurant");
@@ -141,8 +148,8 @@ public class DetailsActivity extends AppCompatActivity {
                             Boolean isOpen = jsonObject.getBoolean("is_open");
                             String thumbnail = images.getString("thumbnail_medium");
 
-                            //Refresh screen UI
-                            refreshUI(name, intro, message, isOpen, thumbnail);
+                            //Screen UI
+                            setScreenUI(name, intro, message, isOpen, thumbnail);
 
                             //Disable progress bar
                             progressBar.disableProgress();
@@ -158,11 +165,11 @@ public class DetailsActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        System.out.println("############# DETAILS ERROR: " + error.toString());
                         error.printStackTrace();
 
-                        //Disable progress bar
+                        //Disable progress bar and alert user that connection timed out
                         progressBar.disableProgress();
+                        Toast.makeText(DetailsActivity.this, R.string.connection_alert, Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -177,9 +184,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * Refresh UI
-     * <p>
-     * Refresh UI screen view
+     * Set screen Ui view
      *
      * @param name      restaurant name
      * @param intro     restaurant intro
@@ -187,7 +192,8 @@ public class DetailsActivity extends AppCompatActivity {
      * @param isOpen    is open
      * @param thumbnail thumbnail url
      */
-    private void refreshUI(String name, String intro, String message, boolean isOpen, String thumbnail) {
+    private void setScreenUI(String name, String intro, String message, boolean isOpen, String thumbnail) {
+
         RestaurantData restaurantData = new RestaurantData(name, intro, message, isOpen);
         ImageData imageData = new ImageData(thumbnail);
 
@@ -220,6 +226,7 @@ public class DetailsActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_logout) {
+            //Logout action
             logout();
         }
 
@@ -229,10 +236,11 @@ public class DetailsActivity extends AppCompatActivity {
     /**
      * Logout
      * <p>
-     * Clear stored preferences after user logout
+     * Clear stored data after user logout
      */
     private void logout() {
-        prefsManager.clearData(token);
+        prefsManager.clearToken(token);
+
         startActivity(new Intent(DetailsActivity.this, LoginActivity.class));
         finish();
     }
@@ -240,6 +248,8 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+
+        //Cancel request
         volleyServiceManager.cancelVolleyRequest();
     }
 

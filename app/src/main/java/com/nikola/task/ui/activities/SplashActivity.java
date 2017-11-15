@@ -22,6 +22,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         prefsManager = new SharedPrefsManager(getApplicationContext());
+        System.out.println("############# SPLASH SCREEN LOGGED IN : " + prefsManager.isLoggedIn());
 
         //Set timer delay seconds
         new Timer().schedule(new TimerTask() {
